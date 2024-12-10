@@ -30,6 +30,22 @@
         android:focusable="false"
         android:clickable="true" />
 
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RadioButton
+            android:id="@+id/checkboxIncome"
+            android:text="Income"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <RadioButton
+            android:id="@+id/checkboxExpense"
+            android:text="Expense"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </RadioGroup>
+
     <Button
         android:id="@+id/saveButton"
         android:layout_width="match_parent"

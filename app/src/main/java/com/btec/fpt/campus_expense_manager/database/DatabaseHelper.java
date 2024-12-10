@@ -48,6 +48,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String COLUMN_BUDGET = "budget";
 
+    //transaction type
+    private static final String TABLE_TYPE = "TYPE";
+    private static final String COLUMN_TABLE_ID = "type_id";
+    private static final String COLUMN_TABLE_TYPE = "type";
+
     public  DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -88,6 +93,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_BUDGET + " REAL" +
         ")";
         db.execSQL(CREATE_USER_TABLE);
+
+        // Create transactionType table
+        String CREATE_TRANSACTION_TYPE = "CREATE TABLE " + TABLE_TYPE + "("
+                + COLUMN_TABLE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + COLUMN_TABLE_TYPE + " TEXT UNIQUE NOT NULL,"
+                + COLUMN_EMAIL + " TEXT "+
+
+                ")";
+        db.execSQL(CREATE_TRANSACTION_TYPE);
+        insertDefaultTransactionType(db,null);
 
 
 
@@ -323,7 +338,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 @SuppressLint("Range") String email2 = cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL));
                 @SuppressLint("Range") String category = cursor.getString(cursor.getColumnIndex(COLUMN_CATEGORY));
 
-                Transaction transaction = new Transaction(id, amount, description, date,type, email2, category );
+                Transaction transaction = new Transaction(id, amount, description, date, type, email2, category );
                 transactionList.add(transaction);
             } while (cursor.moveToNext());
         }
@@ -381,6 +396,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return userList;
     }
 
+    // Method to insert default transaction into the database
+    private void insertDefaultTransactionType(SQLiteDatabase db, String email){
+        Integer[] defaultTypes = {0, 1};
+        for(Integer transactionType : defaultTypes){
+            ContentValues value = new ContentValues();
+            value.put(COLUMN_TYPE, transactionType);
+            value.put(COLUMN_EMAIL, email);
+            db.insert(TABLE_TRANSACTION,null, value);
+        }
+    }
+
 
     public BalanceInfor getBalanceFromEmail(String email){
 
@@ -420,7 +446,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Method to insert default categories into the database
     private void insertDefaultCategories(SQLiteDatabase db, String email) {
-        String[] defaultCategories = {"Food", "Transport", "Entertainment", "Utilities", "Health"};
+        String[] defaultCategories = {"Food",
+                "Transport",
+                "Entertainment", "Utilities", "Health"};
 
         for (String categoryName : defaultCategories) {
             ContentValues values = new ContentValues();
@@ -553,12 +581,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return null;
     }
-    public boolean updateTransaction(int id, String description, double amount, String date, String category) {
+    public boolean updateTransaction(int id, String description, double amount, String date, int type, String category) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COLUMN_AMOUNT, amount);
         values.put(COLUMN_DESCRIPTION, description);
+        values.put(COLUMN_AMOUNT, amount);
         values.put(COLUMN_DATE, date);
+        values.put(COLUMN_TYPE, type);
         values.put(COLUMN_CATEGORY, category);
 
         int rowsAffected = db.update(TABLE_TRANSACTION, values, COLUMN_TRANSACTION_ID + " = ?", new String[]{String.valueOf(id)});

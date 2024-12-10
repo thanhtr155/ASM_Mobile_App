@@ -119,8 +119,21 @@ public class HomeFragment  extends Fragment {
             }
         });
 
+        Button btnLogout = view.findViewById(R.id.btnLogout);
+        btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Clear session data but keep email and password
+                SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.remove("sessionData"); // If you have any session-specific data
+                editor.apply();
 
-        return  view;
+                loadFragment(new LoginFragment()); // Navigate to LoginFragment
+            }
+        });
+
+        return view;
 
     }
 

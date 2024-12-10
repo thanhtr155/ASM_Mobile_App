@@ -1,3 +1,4 @@
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -5,16 +6,57 @@
     android:padding="16dp"
     android:clickable="true"
     android:focusable="true">
+    <TextView
+        android:layout_marginTop="20dp"
+        android:text="Select category"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
-
-    <!-- Spinner widget -->
+    <!-- Spinner widget for categories-->
     <Spinner
+        android:layout_marginTop="20dp"
         android:id="@+id/spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:spinnerMode="dropdown" />
 
+    <TextView
+        android:layout_marginTop="20dp"
+        android:text="Select type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioGroup
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RadioButton
+                android:id="@+id/checkboxIncome"
+                android:text="Income"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <RadioButton
+                android:id="@+id/checkboxExpense"
+                android:text="Expense"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </RadioGroup>
+
+    </LinearLayout>
+
+<!--    <Spinner-->
+<!--        android:id="@+id/spinnerType"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:spinnerMode="dropdown" />-->
+
     <EditText
+        android:layout_marginTop="20dp"
         android:id="@+id/amountEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

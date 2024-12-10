@@ -10,7 +10,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -21,6 +23,7 @@ import com.btec.fpt.campus_expense_manager.R;
 import com.btec.fpt.campus_expense_manager.database.DatabaseHelper;
 import com.btec.fpt.campus_expense_manager.entities.Category;
 import com.btec.fpt.campus_expense_manager.entities.Transaction;
+import com.btec.fpt.campus_expense_manager.models.BalanceInfor;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -36,6 +39,7 @@ public class AddExpenseFragment extends Fragment {
 
     }
     static  String categoryString = "Food";
+    static Integer typeString = 0;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -61,8 +65,16 @@ public class AddExpenseFragment extends Fragment {
             categoryNames.add(category.getName());
         }
 
+        ArrayList<Integer> transactionNames = new ArrayList<>();
+        for (Transaction transaction : dbHelper.getAllTransactionsByEmail(DataStatic.email)){
+            transactionNames.add(transaction.getType());
+        }
+
+
+
         // Convert ArrayList to an array if required
         String[] categoryNameArray = categoryNames.toArray(new String[0]);
+        Integer[] transactionNameArray = transactionNames.toArray(new Integer[0]);
 
 
         // Data for the Spinner
@@ -75,11 +87,20 @@ public class AddExpenseFragment extends Fragment {
                 categoryNameArray
         );
 
+        ArrayAdapter<Integer> adapterTypes = new ArrayAdapter<>(
+                getContext(),
+                android.R.layout.simple_spinner_item,
+                transactionNameArray
+        );
+
         // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapterTypes.setDropDownViewResource((android.R.layout.simple_spinner_item));
+        adapterTypes.notifyDataSetChanged();
 
         // Set the adapter to the Spinner
         spinner.setAdapter(adapter);
+
 
         // Set a listener for when an item is selected
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -96,6 +117,7 @@ public class AddExpenseFragment extends Fragment {
                 // Optional: Handle case when nothing is selected
             }
         });
+
         Button addButton = view.findViewById(R.id.addButton);
 
         Button btnDisplay = view.findViewById(R.id.btnDisplay);
@@ -119,6 +141,8 @@ public class AddExpenseFragment extends Fragment {
         return view;
     }
 
+
+
     private void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, fragment);
@@ -131,20 +155,19 @@ public class AddExpenseFragment extends Fragment {
         String date = dateEditText.getText().toString();
 
 
+        RadioButton checkboxIncome = getView().findViewById(R.id.checkboxIncome);
+        int type = checkboxIncome.isChecked() ? 1 : 0; // 1 cho Income, 0 cho Expense
 
-
-        boolean inserted = dbHelper.insertTransaction(amount, description, date,0, DataStatic.email,categoryString );
+        boolean inserted = dbHelper.insertTransaction(amount, description, date, type, DataStatic.email, categoryString);
         if (inserted) {
             Toast.makeText(getContext(), "Expense added", Toast.LENGTH_SHORT).show();
             amountEditText.setText("");
             descriptionEditText.setText("");
             dateEditText.setText("");
-
-
-
         } else {
-            Toast.makeText(getContext(), "Error adding expense", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Error adding transaction", Toast.LENGTH_SHORT).show();
         }
+
     }
 
     private void showDatePickerDialog() {

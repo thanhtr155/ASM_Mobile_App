@@ -32,11 +32,12 @@
 
 
 
-            <ImageView
+            <Button
+                android:id="@+id/btnLogout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:src="@drawable/icon_x"
-                android:layout_width="50dp"
-                android:layout_height="50dp"/>
+                android:text="Logout" />
 
         </RelativeLayout>
 
@@ -98,18 +99,23 @@
                 android:layout_height="wrap_content"/>
         </RelativeLayout>
 
-
-        <RelativeLayout
+        <EditText
+            android:id="@+id/expenseLimitEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <Button
-                android:id="@+id/setBudgetButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:text="Set Budget" />
-        </RelativeLayout>
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:hint="Limit budget"
+            android:inputType="numberDecimal" />
+
+        <Button
+            android:id="@+id/setLimitButton"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set Budget" />
 
 
 

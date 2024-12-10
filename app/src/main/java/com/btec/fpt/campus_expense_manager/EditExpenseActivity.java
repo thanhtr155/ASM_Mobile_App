@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -76,6 +77,13 @@ public class EditExpenseActivity extends AppCompatActivity {
             amountEditText.setText(String.valueOf(transaction.getAmount()));
             dateEditText.setText(transaction.getDate());
             categorySpinner.setSelection(getCategoryPosition(transaction.getCategory()));
+
+            // Cập nhật trạng thái RadioButton
+            if (transaction.getType() == 1) {
+                ((RadioButton) findViewById(R.id.checkboxIncome)).setChecked(true);
+            } else {
+                ((RadioButton) findViewById(R.id.checkboxExpense)).setChecked(true);
+            }
         } else {
             Toast.makeText(this, "Transaction not found", Toast.LENGTH_SHORT).show();
             finish();
@@ -123,11 +131,12 @@ public class EditExpenseActivity extends AppCompatActivity {
         }
 
         double amount = Double.parseDouble(amountStr);
+        int type = ((RadioButton) findViewById(R.id.checkboxIncome)).isChecked() ? 1 : 0; // 1 cho Income, 0 cho Expense
 
-        boolean success = dbHelper.updateTransaction(transactionId, description, amount, date, category);
+        boolean success = dbHelper.updateTransaction(transactionId, description, amount, date, type, category);
         if (success) {
             Toast.makeText(this, "Transaction updated successfully", Toast.LENGTH_SHORT).show();
-            finish(); // Go back to the previous screen
+            finish(); // Quay lại màn hình trước
         } else {
             Toast.makeText(this, "Failed to update transaction", Toast.LENGTH_SHORT).show();
         }

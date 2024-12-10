@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -46,9 +47,10 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-         view = inflater.inflate(R.layout.fragment_login, container, false);
+        view = inflater.inflate(R.layout.fragment_login, container, false);
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
+
 
         databaseHelper = new DatabaseHelper(getContext());
         // Find buttons
@@ -56,47 +58,34 @@ public class LoginFragment extends Fragment {
         Button registerButton = view.findViewById(R.id.goto_register_button);
         Button forgotPasswordButton = view.findViewById(R.id.goto_forgot_password_button);
 
-
         EditText edtEmail = view.findViewById(R.id.email);
         EditText edtPassword = view.findViewById(R.id.password);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
-
                 String email = edtEmail.getText().toString();
                 String pwd = edtPassword.getText().toString();
 
-                if(!email.isEmpty() && !pwd.isEmpty()){
+                if (!email.isEmpty() && !pwd.isEmpty()) {
+                    boolean check = databaseHelper.signIn(email, pwd); // Authenticate user
 
+                    if (check) {
+                        editor.putString("email", email);
+                        editor.putString("password", pwd);
+                        editor.apply(); // Save changes
 
-                  boolean check =   databaseHelper.signIn(email, pwd);
+                        DataStatic.email=email;
+                        DataStatic.password=pwd;
 
-                  if(check){
-                      // Luu mat khau va email
-                      editor.putString("email", email);
-                      editor.putString("password", pwd);  // Store hashed/encrypted version instead
-                      editor.apply();  // or use commit() for synchronous saving
-
-                      DataStatic.email = email;
-                      DataStatic.password = pwd;
-
-                      Intent intent = new Intent(getActivity(), HomeActivity.class);
-                      startActivity(intent);
-                  }else {
-
-                      showToastCustom("Email or password incorrect!");
-
-                  }
-
-
-                }else {
+                        Intent intent = new Intent(getActivity(), HomeActivity.class);
+                        startActivity(intent);
+                    } else {
+                        showToastCustom("Email or password incorrect!");
+                    }
+                } else {
                     showToastCustom("Email or password is invalid !!!");
                 }
-
-
             }
         });
 
