@@ -154,21 +154,30 @@ public class AddExpenseFragment extends Fragment {
         String description = descriptionEditText.getText().toString();
         String date = dateEditText.getText().toString();
 
-
         RadioButton checkboxIncome = getView().findViewById(R.id.checkboxIncome);
-        int type = checkboxIncome.isChecked() ? 1 : 0; // 1 cho Income, 0 cho Expense
+        int type = checkboxIncome.isChecked() ? 1 : 0; // 1 for Income, 0 for Expense
+
+        double currentBalance = dbHelper.getBalanceFromEmail(DataStatic.email).getBalance();
+
+        // Check if expense exceeds the current balance
+        if (type == 0 && amount > currentBalance) {
+            Toast.makeText(getContext(), "Over budget! Expense not added.", Toast.LENGTH_SHORT).show();
+            return; // Exit the method without adding the expense
+        }
 
         boolean inserted = dbHelper.insertTransaction(amount, description, date, type, DataStatic.email, categoryString);
+        double updatedBalance = dbHelper.getBalanceFromEmail(DataStatic.email).getBalance();
+
         if (inserted) {
-            Toast.makeText(getContext(), "Expense added", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Transaction added", Toast.LENGTH_SHORT).show();
             amountEditText.setText("");
             descriptionEditText.setText("");
             dateEditText.setText("");
         } else {
             Toast.makeText(getContext(), "Error adding transaction", Toast.LENGTH_SHORT).show();
         }
-
     }
+
 
     private void showDatePickerDialog() {
         // Lấy ngày hiện tại
