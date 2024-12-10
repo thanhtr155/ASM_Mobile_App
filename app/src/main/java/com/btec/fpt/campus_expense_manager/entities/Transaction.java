@@ -21,6 +21,10 @@ public class Transaction {
         this.category = category;
     }
 
+    public Transaction() {
+
+    }
+
 
     public String getCategory() {
         return category;

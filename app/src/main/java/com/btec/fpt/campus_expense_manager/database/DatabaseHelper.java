@@ -538,6 +538,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    public Transaction getTransactionById(int transactionId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query("transactions", null, "id = ?",
+                new String[]{String.valueOf(transactionId)}, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            Transaction transaction = new Transaction();
+            transaction.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+            transaction.setDescription(cursor.getString(cursor.getColumnIndexOrThrow("description")));
+            transaction.setAmount(cursor.getDouble(cursor.getColumnIndexOrThrow("amount")));
+            cursor.close();
+            return transaction;
+        }
+        return null;
+    }
+    public boolean updateTransaction(int transactionId, String description, double amount) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("description", description);
+        values.put("amount", amount);
+
+        int rows = db.update("transactions", values, "id = ?", new String[]{String.valueOf(transactionId)});
+        db.close();
+        return rows > 0; // Return true if rows were affected
+    }
+
+
+
 
 
 

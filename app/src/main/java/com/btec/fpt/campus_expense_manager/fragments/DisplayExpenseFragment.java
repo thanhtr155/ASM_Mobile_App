@@ -5,7 +5,9 @@ import static com.btec.fpt.campus_expense_manager.R.*;
         import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import java.util.List;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +21,12 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.btec.fpt.campus_expense_manager.DataStatic;
+import com.btec.fpt.campus_expense_manager.EditExpenseActivity;
+import com.btec.fpt.campus_expense_manager.ExpenseAdapter;
 import com.btec.fpt.campus_expense_manager.R;
 import com.btec.fpt.campus_expense_manager.database.DatabaseHelper;
 import com.btec.fpt.campus_expense_manager.entities.Category;
@@ -36,15 +42,18 @@ public class DisplayExpenseFragment extends Fragment {
     }
 
     private DatabaseHelper dbHelper;
-    private ListView expensesListView;
+    private RecyclerView expensesRecyclerView;
     private EditText dateStart, dateEnd;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_display_expense, container, false);
         dbHelper = new DatabaseHelper(getContext());
-        expensesListView = view.findViewById(R.id.expensesListView);
+        expensesRecyclerView = view.findViewById(R.id.expensesRecyclerView);
+
+        // Setup RecyclerView
+        expensesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         Spinner categorySpinner = view.findViewById(R.id.categorySpinner);
         dateStart = view.findViewById(R.id.dateStart);
         dateEnd = view.findViewById(R.id.dateEnd);
@@ -52,7 +61,6 @@ public class DisplayExpenseFragment extends Fragment {
         dateStart.setOnClickListener(v -> showDatePickerDialogToStart());
         dateEnd.setOnClickListener(v -> showDatePickerDialogToEnd());
 
-        // Load categories into Spinner
         ArrayList<String> categoryNames = new ArrayList<>();
         for (Category category : dbHelper.getAllCategoryByEmail(DataStatic.email)) {
             categoryNames.add(category.getName());
@@ -65,68 +73,70 @@ public class DisplayExpenseFragment extends Fragment {
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorySpinner.setAdapter(categoryAdapter);
 
-
         Button searchButton = view.findViewById(R.id.searchButton);
         searchButton.setOnClickListener(v -> {
             String selectedCategory = categorySpinner.getSelectedItem().toString();
             String startDate = dateStart.getText().toString();
             String endDate = dateEnd.getText().toString();
 
-
-            // Gọi phương thức lọc
             loadExpensesByCategoryAndDate(selectedCategory, startDate, endDate);
         });
 
         loadExpenses();
-
-
-        // Ensure this return statement is outside the listener block
         return view;
     }
 
     private void loadExpenses() {
         List<Transaction> transactionList = dbHelper.getAllTransactionsByEmail(DataStatic.email);
-
         if (transactionList.isEmpty()) {
-            // Debug: In thông báo nếu danh sách trống
-            Toast.makeText(getContext(),"No transactions found!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "No transactions found!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Extract category names into an ArrayList
-        ArrayList<String> transactionName = new ArrayList<>();
-        for (Transaction transaction : transactionList) {
-            transactionName.add(transaction.getDescription());
-        }
+        ExpenseAdapter adapter = new ExpenseAdapter(transactionList, new ExpenseAdapter.OnExpenseActionListener() {
+            @Override
+            public void onEditExpense(Transaction transaction) {
+                // Redirect to edit expense page
+                Intent intent = new Intent(getContext(), EditExpenseActivity.class);
+                intent.putExtra("transaction_id", transaction.getId());
+                startActivity(intent);
+            }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, transactionName);
-        expensesListView.setAdapter(adapter);
+            @Override
+            public void onDeleteExpense(Transaction transaction) {
+                dbHelper.deleteTransaction(transaction.getId());
+                loadExpenses(); // Refresh the list
+            }
+        });
+
+        expensesRecyclerView.setAdapter(adapter);
     }
 
-
-
     private void loadExpensesByCategoryAndDate(String category, String startDate, String endDate) {
-        // Lấy danh sách giao dịch theo danh mục và email
         List<Transaction> transactionList = dbHelper.getTransactionsByCategoryAndDate(DataStatic.email, category, startDate, endDate);
 
         if (transactionList.isEmpty()) {
-            // Debug: Hiển thị thông báo nếu không có giao dịch
-            Toast.makeText(getContext(),"No transactions found for category: " + category + " and date range: " + startDate + " - " + endDate, Toast.LENGTH_SHORT).show();
-            
-            loadExpenses();
+            Toast.makeText(getContext(), "No transactions found for the selected category and date range.", Toast.LENGTH_SHORT).show();
+            loadExpenses(); // Load all transactions if none found in the filter
             return;
         }
 
-        // Lấy mô tả giao dịch
-        ArrayList<String> transactionDescriptions = new ArrayList<>();
-        for (Transaction transaction : transactionList) {
-            transactionDescriptions.add(transaction.getDescription());
-        }
+        // Set the adapter for RecyclerView
+        ExpenseAdapter adapter = new ExpenseAdapter(transactionList, new ExpenseAdapter.OnExpenseActionListener() {
+            @Override
+            public void onEditExpense(Transaction transaction) {
+                // Handle edit button click here
+            }
 
-        // Cập nhật ListView
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, transactionDescriptions);
-        expensesListView.setAdapter(adapter);
+            @Override
+            public void onDeleteExpense(Transaction transaction) {
+                dbHelper.deleteTransaction(transaction.getId());
+                loadExpenses(); // Refresh the list
+            }
+        });
+        expensesRecyclerView.setAdapter(adapter);
     }
+
 
 
     private void showDatePickerDialogToStart() {
@@ -166,6 +176,7 @@ public class DisplayExpenseFragment extends Fragment {
         // Hiển thị dialog
         datePickerDialog.show();
     }
+
 
 }
 
