@@ -40,6 +40,8 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         Transaction transaction = transactions.get(position);
         holder.expenseDescription.setText(transaction.getDescription());
         holder.expenseAmount.setText(String.valueOf(transaction.getAmount()));
+        holder.expenseCategory.setText(transaction.getCategory()); // Set the category
+        holder.expenseDate.setText(transaction.getDate()); // Set the date
 
         holder.editButton.setOnClickListener(v -> listener.onEditExpense(transaction));
         holder.deleteButton.setOnClickListener(v -> listener.onDeleteExpense(transaction));
@@ -53,11 +55,17 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
     static class ExpenseViewHolder extends RecyclerView.ViewHolder {
         TextView expenseDescription;
         TextView expenseAmount;
+        TextView expenseCategory;
+
+        TextView expenseDate;
+
         Button editButton;
         Button deleteButton;
 
         public ExpenseViewHolder(@NonNull View itemView) {
             super(itemView);
+            expenseCategory = itemView.findViewById(R.id.expenseCategory);
+            expenseDate = itemView.findViewById(R.id.expenseDate);
             expenseDescription = itemView.findViewById(R.id.expenseDescription);
             expenseAmount = itemView.findViewById(R.id.expenseAmount);
             editButton = itemView.findViewById(R.id.editButton);
