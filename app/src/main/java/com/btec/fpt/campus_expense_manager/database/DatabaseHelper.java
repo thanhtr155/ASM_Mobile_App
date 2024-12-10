@@ -553,21 +553,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return null;
     }
-    public boolean updateTransaction(int transactionId, String description, double amount) {
+    public boolean updateTransaction(int id, String description, double amount, String date, String category) {
         SQLiteDatabase db = this.getWritableDatabase();
-
         ContentValues values = new ContentValues();
-        values.put("description", description);
-        values.put("amount", amount);
+        values.put(COLUMN_AMOUNT, amount);
+        values.put(COLUMN_DESCRIPTION, description);
+        values.put(COLUMN_DATE, date);
+        values.put(COLUMN_CATEGORY, category);
 
-        int rows = db.update("transactions", values, "id = ?", new String[]{String.valueOf(transactionId)});
+        int rowsAffected = db.update(TABLE_TRANSACTION, values, COLUMN_TRANSACTION_ID + " = ?", new String[]{String.valueOf(id)});
         db.close();
-        return rows > 0; // Return true if rows were affected
+        return rowsAffected > 0;
     }
-
-
-
-
-
 
 }
