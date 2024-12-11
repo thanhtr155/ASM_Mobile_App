@@ -4,12 +4,7 @@
     android:padding="16dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-    
-    <ImageView
-        android:src="@drawable/icon_x"
-        android:layout_gravity="center"
-        android:layout_width="50dp"
-        android:layout_height="50dp"/>
+
 
     <!-- Custom dialog title -->
     <TextView

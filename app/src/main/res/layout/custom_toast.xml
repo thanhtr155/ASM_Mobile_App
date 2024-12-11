@@ -12,7 +12,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginEnd="8dp"
-        android:src="@drawable/icon_x" /> <!-- Replace with your icon -->
+         /> <!-- Replace with your icon -->
 
     <TextView
         android:id="@+id/toast_message"
