@@ -32,6 +32,14 @@ android {
 }
 
 dependencies {
+    // JUnit
+    testImplementation("junit:junit:4.13.2")
+    testImplementation(libs.core)
+    // Espresso for UI testing
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test:runner:1.5.2")
+
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("androidx.recyclerview:recyclerview:1.3.1")
     implementation(libs.appcompat)

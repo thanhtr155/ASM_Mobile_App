@@ -1,8 +1,18 @@
 package com.btec.fpt.campus_expense_manager;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+
+import android.content.Context;
+
+import com.btec.fpt.campus_expense_manager.database.DatabaseHelper;
+
+import androidx.test.core.app.ApplicationProvider;
+
+import static org.junit.Assert.assertTrue;
+// Inside your test class
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -15,3 +25,4 @@ public class ExampleUnitTest {
         assertEquals(4, 2 + 2);
     }
 }
+
